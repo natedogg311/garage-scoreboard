@@ -470,7 +470,7 @@ function pickToTeam(p){
   const L = LEAGUES.find(l => l.code === p.c);
   const col = p.col ? '#' + p.col : '#444';
   return { label: p.l || '', path: L.path, team: p.id, color: col, sb: L.sb, logo: p.logo, abbr: p.a, loc: p.loc, short: p.s,
-    glow: p.g || ((p.c === 'nfl' || p.c === 'nba') ? lighten(col) : null) };
+    alt: p.alt ? '#' + p.alt : '', glow: p.g || null };
 }
 function applyPicks(){
   IS_DEFAULT = PICKS === 'mn';
@@ -483,8 +483,8 @@ function teamList(code){
   if (!TEAMLISTS[code]){
     const L = LEAGUES.find(l => l.code === code);
     TEAMS_JSON = TEAMS_JSON || getJSON(`https://raw.githubusercontent.com/yourscores/yourscores.github.io/main/teams.json?t=${Math.floor(Date.now()/864e5)}`).catch(e => { TEAMS_JSON = null; return {}; });
-    TEAMLISTS[code] = TEAMS_JSON.then(j => (j[code] || []).map(([id, a, name, loc, short, col, logo]) => ({
-      c: code, id: String(id), a, name, loc, col, logo, l: L.sport ? `${loc} ${L.sport}` : code === 'mls' ? name : short
+    TEAMLISTS[code] = TEAMS_JSON.then(j => (j[code] || []).map(([id, a, name, loc, short, col, logo, alt]) => ({
+      c: code, id: String(id), a, name, loc, col, logo, alt: alt || '', l: L.sport ? `${loc} ${L.sport}` : code === 'mls' ? name : short
     }))).then(r => { if (!r.length) delete TEAMLISTS[code]; return r; });
   }
   return TEAMLISTS[code];
@@ -494,7 +494,7 @@ async function ensureMeta(){
   for (const p of PICKS){
     if (p.l) continue;
     const t = (await teamList(p.c)).find(x => x.id === String(p.id));
-    if (t) Object.assign(p, { l: t.l, col: t.col, logo: t.logo, a: t.a, loc: t.loc });
+    if (t) Object.assign(p, { l: t.l, col: t.col, alt: t.alt, logo: t.logo, a: t.a, loc: t.loc });
   }
   try { localStorage.setItem('ysTeams', JSON.stringify(PICKS)); } catch(e){}
   applyPicks();
@@ -871,7 +871,7 @@ function shieldBar(){
   const ts = CFG.mnTeams.filter((t,i) => t.events && !teamState(t,i).off);
   if (!ts.length) return '';
   return `<div class="shbar"><span>Watching on delay?</span><div class="shb">${ts.map(t => { const on = SH.on[tkey(t)];
-    return `<button data-shield="${esc(tkey(t))}" class="${on ? 'on' : ''}" style="--gl:${t.glow || lighten(t.color)}" title="${esc(t.label)}">${logoImg(t.logo)}${on ? '<b>ON</b>' : ''}</button>`; }).join('')}</div></div>`;
+    return `<button data-shield="${esc(tkey(t))}" class="${on ? 'on' : ''}" style="--gl:${tglow(t)}" title="${esc(t.label)}">${logoImg(t.logo)}${on ? '<b>ON</b>' : ''}</button>`; }).join('')}</div></div>`;
 }
 
 /* ---------------- panels ---------------- */
@@ -943,7 +943,7 @@ function panelLeague(code){
   const tiles = list => list.map(e => gameTile(e, ids, path)).join('');
   const grid = list => `<div class="games" style="grid-template-columns:repeat(4,1fr);flex:none">${tiles(list)}</div>`;
   const t0 = mine[0];
-  let html = games.length ? `<div class="sub wolvesSub" style="--gl:${t0.glow || lighten(t0.color)}">${mine.length > 1 ? 'Your teams' : esc(t0.label)}</div>${grid(games)}` : '';
+  let html = games.length ? `<div class="sub wolvesSub" style="--gl:${tglow(t0)}">${mine.length > 1 ? 'Your teams' : esc(t0.label)}</div>${grid(games)}` : '';
   html += `<div class="sub" style="margin-top:.9rem">${college ? 'Top 25 today' : 'Today'}</div>` + (todayL.length ? grid(todayL) : `<div class="empty" style="padding:1rem">${college ? 'No ranked games today' : 'No other games today'}</div>`);
   if (yL.length) html += `<div class="sub" style="margin-top:.9rem">${college ? 'Top 25 yesterday' : 'Yesterday'}</div>` + grid(yL);
   if (L.cols && D['st_' + code]){
@@ -956,16 +956,19 @@ function panelLeague(code){
   }
   return html;
 }
+function satOf(hex){ const h = (hex || '').replace('#',''); if (h.length < 6) return 0; const [r,g,b] = [0,2,4].map(i => parseInt(h.substr(i,2),16)/255); const mx = Math.max(r,g,b), mn = Math.min(r,g,b); return mx - mn; }
+// a team's glow: its own glow if set, else its color brightened (or its second color when the main one is black, white or gray)
+function tglow(t){ if (!t) return 'var(--gold)'; if (t.glow) return t.glow; const c = satOf(t.color) < .12 && satOf(t.alt) >= .12 ? t.alt : t.color; return satOf(c) < .12 ? 'hsl(45 20% 82%)' : lighten(c); }
 function teamFor(e, path){ return CFG.mnTeams.find(t => t.path === path && t.id && e?.teams?.some(x => x.id === t.id)) || null; }
 const glowCls = t => t?.glow ? 'glow' : '';
 const glowSty = t => t?.glow ? ` style="--gl:${t.glow}"` : '';
 const myAbbr = (path, abbr) => CFG.mnTeams.find(t => t.path === path && t.abbr && t.abbr === abbr) || null;
-const stSty = (path, abbr) => { const t = myAbbr(path, abbr); return t ? ` style="--gl:${t.glow || lighten(t.color)}"` : ''; };
+const stSty = (path, abbr) => { const t = myAbbr(path, abbr); return t ? ` style="--gl:${tglow(t)}"` : ''; };
 function gameTile(e, mnIds, path){
   const hideRec = hiddenIds(path);
   if (hid(e, path)){
     const rows = e.teams.map(x => `<div class="row">${logoImg(x.logo)}<span class="ab">${esc(x.abbr)}</span><span class="rc"></span><span class="sc"></span></div>`).join('');
-    const ht = teamFor(e, path), hg = ht ? (ht.glow || lighten(ht.color)) : null;
+    const ht = teamFor(e, path), hg = ht ? (tglow(ht)) : null;
     return `<div class="g hidg mn ${hg ? 'glow' : ''}"${hg ? ` style="--gl:${hg}"` : ''} data-gid="${e.id}" data-path="${path || ''}">${rows}<div class="st"><span class="hidt">Score hidden</span><span>${esc(e.tv)}</span></div></div>`;
   }
   const live = e.state === 'in', pre = e.state === 'pre', post = e.state === 'post';
@@ -998,7 +1001,7 @@ function gameTile(e, mnIds, path){
   } else {
     st = `<div class="st lv"><span>${esc(e.detail)}</span><span>${sitText(e) || (isMN ? esc(e.tv) : '')}</span></div>`;
   }
-  const mt = isMN ? teamFor(e, path) : null, gl = mt ? (mt.glow || lighten(mt.color)) : null;
+  const mt = isMN ? teamFor(e, path) : null, gl = mt ? (tglow(mt)) : null;
   return `<div class="g ${live ? 'live' : ''} ${gl ? 'mn glow' : ''}"${gl ? ` style="--gl:${gl}"` : ''} data-gid="${e.id}" data-path="${path || ''}">${rows}${st}</div>`;
 }
 function sortGames(list){
@@ -1032,7 +1035,7 @@ function panelNBA(){
   const maxY = PHONE ? 8 : Math.max(0, rowsLeft * 4);
   const tiles = list => list.map(e => gameTile(e, ids, 'basketball/nba')).join('');
   return { title: 'NBA', html: `
-    ${wolves.length ? `<div class="sub wolvesSub" style="--gl:${wt?.glow || lighten(wt?.color)}">${mine.length > 1 ? 'Your teams' : esc(wt?.label || '')}</div><div class="games" style="grid-template-columns:repeat(4,1fr);flex:none">${tiles(wolves)}</div>` : ''}
+    ${wolves.length ? `<div class="sub wolvesSub" style="--gl:${tglow(wt)}">${mine.length > 1 ? 'Your teams' : esc(wt?.label || '')}</div><div class="games" style="grid-template-columns:repeat(4,1fr);flex:none">${tiles(wolves)}</div>` : ''}
     <div class="sub" style="margin-top:.9rem">Today</div>
     <div class="games" style="grid-template-columns:repeat(4,1fr);flex:none">${todayL.length ? tiles(todayL) : '<div class="empty" style="grid-column:1/-1;padding:1rem">No other games today</div>'}</div>
     ${yL.length && maxY ? `<div class="sub" style="margin-top:.9rem">Yesterday</div><div class="games" style="grid-template-columns:repeat(4,1fr);flex:none">${tiles(yL.slice(0, maxY))}</div>` : ''}` };
@@ -1482,7 +1485,7 @@ function mnList(){
     const [a, h] = e.teams;
     const rec = hiddenIds(t.path).has(t.id) ? '' : t.rec;
     const hot = !!s.live || (s.next && e === full(s.next) && ymd(new Date(e.date)) === today);
-    rows.push({ live: !!s.live, html: `<div class="wli ${hot ? 'glow' : ''}"${hot ? ` style="--gl:${t.glow || lighten(t.color)}"` : ''} data-gid="${e.id}" data-path="${t.path}"><span class="wk">${kind}</span><span class="wt">${logoImg(t.logo)}<small>${LEAGUE[t.path] || ''}</small></span><span class="wm"><b>${esc(a?.abbr)} @ ${esc(h?.abbr)}</b>${rec ? `<small>${esc(rec)}</small>` : ''}</span><span class="wr">${right}${sub ? `<small>${sub}</small>` : ''}</span><i>›</i></div>` });
+    rows.push({ live: !!s.live, html: `<div class="wli ${hot ? 'glow' : ''}"${hot ? ` style="--gl:${tglow(t)}"` : ''} data-gid="${e.id}" data-path="${t.path}"><span class="wk">${kind}</span><span class="wt">${logoImg(t.logo)}<small>${LEAGUE[t.path] || ''}</small></span><span class="wm"><b>${esc(a?.abbr)} @ ${esc(h?.abbr)}</b>${rec ? `<small>${esc(rec)}</small>` : ''}</span><span class="wr">${right}${sub ? `<small>${sub}</small>` : ''}</span><i>›</i></div>` });
   });
   // Gophers wrestling
   const w = wrestNext(), wLogo = GOPHER_LOGO;
@@ -1594,7 +1597,7 @@ document.addEventListener('click', ev => {
   if (t.dataset.pkt){
     const [c, id] = t.dataset.pkt.split(':'), i = SELW.findIndex(p => p.c === c && String(p.id) === id);
     if (i >= 0) SELW.splice(i, 1);
-    else teamList(c).then(list => { const x = list.find(z => z.id === id); if (x){ SELW.push({ c, id, l: x.l, col: x.col, logo: x.logo, a: x.a, loc: x.loc }); pickerRefresh(); } });
+    else teamList(c).then(list => { const x = list.find(z => z.id === id); if (x){ SELW.push({ c, id, l: x.l, col: x.col, alt: x.alt, logo: x.logo, a: x.a, loc: x.loc }); pickerRefresh(); } });
     pickerRefresh(); return;
   }
   if (t.hasAttribute('data-pkshare')){ sharePicks(t); return; }
