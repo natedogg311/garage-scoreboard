@@ -325,13 +325,14 @@ tr.cut td{border-bottom:2px dashed var(--line)}
 .shbar .shb button.on{opacity:1;border:2px solid var(--gl);box-shadow:0 0 .5rem color-mix(in srgb,var(--gl) 70%,transparent);color:#fff;font-size:.7rem}
 .subrow{display:flex;align-items:center;justify-content:space-between}
 .editbtn{background:none;border:1px solid var(--line);color:var(--dim);border-radius:1rem;padding:.25rem .7rem;font-size:.78rem;font-weight:700}
-.pk{display:flex;flex-direction:column;gap:.7rem}
+.pk{display:flex;flex-direction:column;gap:.7rem;min-width:0;max-width:100%}
 .pkhead{display:flex;align-items:center;justify-content:space-between;font-size:1.15rem}
 .pkhead .revbtn{margin:0;padding:.45rem 1.1rem}
 .pkmine{display:flex;flex-wrap:wrap;gap:.4rem;min-height:2rem;align-items:center;color:var(--dim);font-size:.85rem}
 .pkc{display:flex;align-items:center;gap:.3rem;background:var(--panel2);border:1px solid var(--line);border-radius:1rem;padding:.2rem .5rem .2rem .3rem;color:var(--text);font-size:.8rem;font-weight:700}
 .pkc img{width:1.2rem;height:1.2rem;object-fit:contain}.pkc i{font-style:normal;color:var(--dim);margin-left:.15rem;font-size:.95rem}
-.pklg{display:flex;gap:.35rem;overflow-x:auto;padding-bottom:.2rem}
+.pklg{display:flex;gap:.35rem;overflow-x:auto;padding-bottom:.2rem;max-width:100%;scrollbar-width:none}
+.pklg::-webkit-scrollbar{display:none}
 .pklg button{flex:none;background:var(--panel);border:1px solid var(--line);color:var(--dim);border-radius:1rem;padding:.35rem .75rem;font-weight:700;font-size:.8rem}
 .pklg button.on{background:var(--gold);color:#111;border-color:var(--gold)}
 #pkq{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:.5rem;padding:.6rem .7rem;font-size:1rem}
@@ -476,13 +477,14 @@ function applyPicks(){
 }
 /* ESPN team lists, used by the picker and to fill in names for teams set by a shared link */
 const TEAMLISTS = {};
+let TEAMS_JSON = null;
 function teamList(code){
-  if (!TEAMLISTS[code]) {
+  if (!TEAMLISTS[code]){
     const L = LEAGUES.find(l => l.code === code);
-    TEAMLISTS[code] = getJSON(`${API}${L.path}/teams?limit=1000`).then(j => (j.sports?.[0]?.leagues?.[0]?.teams || []).map(({ team: t }) => ({
-      c: code, id: t.id, a: t.abbreviation, name: t.displayName, loc: t.location, col: t.color || '',
-      logo: t.logos?.[0]?.href || '', l: L.sport ? `${t.location} ${L.sport}` : code === 'mls' ? t.displayName : t.shortDisplayName
-    })).sort((x, y) => x.name.localeCompare(y.name))).catch(e => { delete TEAMLISTS[code]; return []; });
+    TEAMS_JSON = TEAMS_JSON || getJSON(`https://raw.githubusercontent.com/yourscores/yourscores.github.io/main/teams.json?t=${Math.floor(Date.now()/864e5)}`).catch(e => { TEAMS_JSON = null; return {}; });
+    TEAMLISTS[code] = TEAMS_JSON.then(j => (j[code] || []).map(([id, a, name, loc, short, col, logo]) => ({
+      c: code, id: String(id), a, name, loc, col, logo, l: L.sport ? `${loc} ${L.sport}` : code === 'mls' ? name : short
+    }))).then(r => { if (!r.length) delete TEAMLISTS[code]; return r; });
   }
   return TEAMLISTS[code];
 }
