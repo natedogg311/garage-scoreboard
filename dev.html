@@ -252,7 +252,8 @@ tr.cut td{border-bottom:2px dashed var(--line)}
   #paneltitle,#dots{display:none}
   #wx{font-size:.8rem;flex:1;text-align:right}
   #clock{font-size:1.15rem}
-  #tabs{display:flex;width:100%;gap:.3rem;overflow-x:auto}
+  #tabs{display:flex;width:100%;gap:.3rem;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth}
+  #tabs::-webkit-scrollbar{display:none}
   #tabs button{flex:1 0 auto;background:var(--panel);color:var(--dim);border:0;border-radius:.45rem;padding:.55rem .6rem;font:inherit;font-weight:800;font-size:.82rem;letter-spacing:.04em;position:relative}
   #tabs button.on{background:var(--gold);color:#000}
   .ld8{position:absolute;top:.3rem;right:.3rem;width:.45rem;height:.45rem;border-radius:50%;background:var(--live)}
@@ -438,10 +439,10 @@ const GOPHER_LOGO = 'https://a.espncdn.com/i/teamlogos/ncaa/500/135.png';
 const LEAGUES = [
   { code:'nfl',  path:'football/nfl',                       name:'NFL' },
   { code:'nba',  path:'basketball/nba',                     name:'NBA' },
-  { code:'nhl',  path:'hockey/nhl',                         name:'NHL' },
-  { code:'mlb',  path:'baseball/mlb',                       name:'MLB' },
-  { code:'wnba', path:'basketball/wnba',                    name:'WNBA' },
-  { code:'mls',  path:'soccer/usa.1',                       name:'MLS' },
+  { code:'nhl',  path:'hockey/nhl',                         name:'NHL',  cols:[['W','wins'],['L','losses'],['OTL','otLosses'],['PTS','points']], sort:'points' },
+  { code:'mlb',  path:'baseball/mlb',                       name:'MLB',  cols:[['W','wins'],['L','losses'],['PCT','winPercent'],['GB','gamesBehind']], sort:'winPercent' },
+  { code:'wnba', path:'basketball/wnba',                    name:'WNBA', cols:[['W','wins'],['L','losses'],['PCT','winPercent'],['GB','gamesBehind']], sort:'winPercent' },
+  { code:'mls',  path:'soccer/usa.1',                       name:'MLS',  cols:[['W','wins'],['L','losses'],['T','ties'],['PTS','points']], sort:'points' },
   { code:'cfb',  path:'football/college-football',          name:'College FB', sport:'Football',   sb:'groups=80' },
   { code:'cbb',  path:'basketball/mens-college-basketball', name:'College BB', sport:'Basketball', sb:'groups=50' },
 ];
@@ -572,6 +573,13 @@ async function loadBoards(){
   // MN league boards for live overrides
   const lg = { nfl:'football/nfl', nba:'basketball/nba', nbaY:'basketball/nba' };
   CFG.mnTeams.forEach((t,i) => { jobs['mn'+i] = `${API}${t.path}/scoreboard${t.sb ? '?'+t.sb : ''}`; lg['mn'+i] = t.path; });
+  // league tabs for every other league you picked: today and yesterday, all games
+  pickedLeagues().filter(L => L.code !== 'nfl' && L.code !== 'nba').forEach(L => {
+    const g = L.sb ? '&' + L.sb : '';
+    jobs['lg_' + L.code] = `${API}${L.path}/scoreboard?dates=${ymd(new Date())}${g}`;
+    jobs['lgY_' + L.code] = `${API}${L.path}/scoreboard?dates=${ymd(new Date(Date.now()-864e5))}${g}`;
+    lg['lg_' + L.code] = lg['lgY_' + L.code] = L.path;
+  });
   const cache = {};
   await Promise.all(Object.entries(jobs).map(async ([k,u]) => {
     try { cache[u] = cache[u] || getJSON(u); D[k] = (await cache[u]).events?.map(norm) || []; D[k].forEach(e => e.lg = lg[k]); D[k+'Week'] = (await cache[u]).week?.number; }
@@ -731,6 +739,15 @@ function ago(d){
   if (m < 60) return m + 'm ago'; const h = Math.round(m/60); if (h < 24) return h + 'h ago'; return Math.round(h/24) + 'd ago';
 }
 async function loadStandings(){
+  await Promise.all(pickedLeagues().filter(L => L.cols).map(async L => {
+    try {
+      const j = await getJSON(`${API2}${L.path}/standings`);
+      D['st_' + L.code] = (j.children || []).map(c => ({ name: c.name, rows: (c.standings?.entries || []).map(e => {
+        const st = {}; (e.stats || []).forEach(x => st[x.name] = x);
+        return { abbr: e.team.abbreviation, logo: e.team.logos?.[0]?.href || '', v: k => st[k]?.displayValue ?? '', n: k => +(st[k]?.value ?? 0) };
+      }).sort((a, b) => b.n(L.sort) - a.n(L.sort) || b.n('wins') - a.n('wins')) }));
+    } catch(e){}
+  }));
   try {
     const j = await getJSON(`${API2}football/nfl/standings?level=3`);
     D.nflStand = j.children.flatMap(conf => conf.children.map(dv => ({
@@ -903,6 +920,41 @@ function lighten(hex){
   const mx = Math.max(r,g,b), mn = Math.min(r,g,b); let H = 0, S = 0, L = (mx+mn)/2;
   if (mx !== mn){ const d = mx-mn; S = L > .5 ? d/(2-mx-mn) : d/(mx+mn); H = mx === r ? (g-b)/d + (g<b?6:0) : mx === g ? (b-r)/d + 2 : (r-g)/d + 4; H /= 6; }
   return `hsl(${Math.round(H*360)} ${Math.max(70, Math.round(S*100))}% 62%)`;
+}
+/* leagues you have at least one team in; a league tab hides while all your teams there are in the offseason */
+function pickedLeagues(){ return LEAGUES.filter(L => CFG.mnTeams.some(t => t.path === L.path)); }
+function leagueInSeason(L){ return CFG.mnTeams.some((t, i) => t.path === L.path && (!t.events || !teamState(t, i).off)); }
+function yourGames(path){
+  const mine = CFG.mnTeams.map((t,i) => [t,i]).filter(([t]) => t.path === path && t.events);
+  const out = [], seen = new Set();
+  const add = e => { if (e && !seen.has(e.id)){ seen.add(e.id); out.push(findEvent(e.id) || e); } };
+  mine.forEach(([t,i]) => { const s = teamState(t, i); add(s.live || s.last); add(s.next); });
+  return { mine: mine.map(([t]) => t), games: out };
+}
+function panelLeague(code){
+  const L = LEAGUES.find(l => l.code === code), path = L.path, ids = mnIdsFor(path);
+  const { mine, games } = yourGames(path);
+  const yours = new Set(games.map(e => e.id));
+  const college = !!L.sport;
+  const keep = e => !yours.has(e.id) && !e.teams.some(x => ids.includes(x.id)) && (!college || e.teams.some(x => x.rank));
+  const today = D['lg_' + code] || [], todayIds = new Set(today.map(e => e.id));
+  const y = (D['lgY_' + code] || []).filter(e => e.state === 'post' && !todayIds.has(e.id));
+  const todayL = sortGames(today.filter(keep)), yL = y.filter(keep);
+  const tiles = list => list.map(e => gameTile(e, ids, path)).join('');
+  const grid = list => `<div class="games" style="grid-template-columns:repeat(4,1fr);flex:none">${tiles(list)}</div>`;
+  const t0 = mine[0];
+  let html = games.length ? `<div class="sub wolvesSub" style="--gl:${t0.glow || lighten(t0.color)}">${mine.length > 1 ? 'Your teams' : esc(t0.label)}</div>${grid(games)}` : '';
+  html += `<div class="sub" style="margin-top:.9rem">${college ? 'Top 25 today' : 'Today'}</div>` + (todayL.length ? grid(todayL) : `<div class="empty" style="padding:1rem">${college ? 'No ranked games today' : 'No other games today'}</div>`);
+  if (yL.length) html += `<div class="sub" style="margin-top:.9rem">${college ? 'Top 25 yesterday' : 'Yesterday'}</div>` + grid(yL);
+  if (L.cols && D['st_' + code]){
+    const hg = hiddenGames(path);
+    html += `<div class="sub" style="margin-top:1.2rem">Standings</div>` + (hg.length ? hiddenBox(hg[0], 'Standings hidden until you reveal this game') :
+      `<div class="confs">${[...D['st_' + code]].sort((a, b) => (b.rows.some(r => myAbbr(path, r.abbr)) ? 1 : 0) - (a.rows.some(r => myAbbr(path, r.abbr)) ? 1 : 0)).map(c => `<div class="conf"><h3>${esc(c.name.toUpperCase())}</h3><table class="tnum">
+        <tr><th>#</th><th style="text-align:left">Team</th>${L.cols.map(([h]) => `<th>${h}</th>`).join('')}</tr>
+        ${c.rows.map((r, i) => `<tr class="${myAbbr(path, r.abbr) ? 'mn' : ''}"${stSty(path, r.abbr)}><td>${i + 1}</td><td style="text-align:left">${logoImg(r.logo)}${esc(r.abbr)}</td>${L.cols.map(([, k]) => `<td>${esc(r.v(k))}</td>`).join('')}</tr>`).join('')}
+      </table></div>`).join('')}</div>`);
+  }
+  return html;
 }
 function teamFor(e, path){ return CFG.mnTeams.find(t => t.path === path && t.id && e?.teams?.some(x => x.id === t.id)) || null; }
 const glowCls = t => t?.glow ? 'glow' : '';
@@ -1356,7 +1408,9 @@ function updateTicker(first){ const h = tickerHTML(); if (first) setTicker(h); e
 const PHONE_MQ = window.matchMedia('(max-width: 820px)');
 const PHONE = PHONE_MQ.matches;
 PHONE_MQ.addEventListener?.('change', () => location.reload());
-const tabsList = () => [['mn', IS_DEFAULT ? 'Minnesota' : 'My Teams'], ['nfl','NFL'], ['nba','NBA'], ...(WRES ? [['wr','Wrestling']] : []), ['news','News']];
+const tabsList = () => [['mn', IS_DEFAULT ? 'Minnesota' : 'My Teams'],
+  ...pickedLeagues().filter(leagueInSeason).map(L => [L.code, L.name]),
+  ...(WRES ? [['wr','Wrestling']] : []), ['news','News']];
 let mTab = 'mn', mDetail = null, mPick = false;
 try { mTab = localStorage.getItem('gsTab') || 'mn'; } catch(e){}
 function refreshView(){ if (PHONE) mobileRender(true); else rerenderSoft(); }
@@ -1427,7 +1481,8 @@ function mnList(){
     if (!e) return;
     const [a, h] = e.teams;
     const rec = hiddenIds(t.path).has(t.id) ? '' : t.rec;
-    rows.push({ live: !!s.live, html: `<div class="wli ${glowCls(t)}"${glowSty(t)} data-gid="${e.id}" data-path="${t.path}"><span class="wk">${kind}</span><span class="wt">${logoImg(t.logo)}<small>${LEAGUE[t.path] || ''}</small></span><span class="wm"><b>${esc(a?.abbr)} @ ${esc(h?.abbr)}</b>${rec ? `<small>${esc(rec)}</small>` : ''}</span><span class="wr">${right}${sub ? `<small>${sub}</small>` : ''}</span><i>›</i></div>` });
+    const hot = !!s.live || (s.next && e === full(s.next) && ymd(new Date(e.date)) === today);
+    rows.push({ live: !!s.live, html: `<div class="wli ${hot ? 'glow' : ''}"${hot ? ` style="--gl:${t.glow || lighten(t.color)}"` : ''} data-gid="${e.id}" data-path="${t.path}"><span class="wk">${kind}</span><span class="wt">${logoImg(t.logo)}<small>${LEAGUE[t.path] || ''}</small></span><span class="wm"><b>${esc(a?.abbr)} @ ${esc(h?.abbr)}</b>${rec ? `<small>${esc(rec)}</small>` : ''}</span><span class="wr">${right}${sub ? `<small>${sub}</small>` : ''}</span><i>›</i></div>` });
   });
   // Gophers wrestling
   const w = wrestNext(), wLogo = GOPHER_LOGO;
@@ -1440,7 +1495,7 @@ function mnList(){
     else if (w.next){ kind = 'NEXT'; opp = w.next.opp; right = wrestWhen(w.next) + (w.next.tv ? ' · ' + esc(w.next.tv) : ''); sub = lastLine; }
     else { kind = 'LAST'; opp = w.last.opp; right = esc(w.last.result || ''); }
     const rk = wrestRank();
-    rows.push({ live: false, html: `<div class="wli" data-tab="wr"><span class="wk">${chip(kind)}</span><span class="wt">${logoImg(wLogo)}<small>WRES</small></span><span class="wm"><b>${esc(opp)}</b>${rk ? `<small>#${rk}</small>` : ''}</span><span class="wr">${right}${sub ? `<small>${sub}</small>` : ''}</span><i>›</i></div>` });
+    rows.push({ live: false, html: `<div class="wli ${kind === 'GAME DAY' ? 'glow' : ''}"${kind === 'GAME DAY' ? ` style="--gl:${lighten('#7a0019')}"` : ''} data-tab="wr"><span class="wk">${chip(kind)}</span><span class="wt">${logoImg(wLogo)}<small>WRES</small></span><span class="wm"><b>${esc(opp)}</b>${rk ? `<small>#${rk}</small>` : ''}</span><span class="wr">${right}${sub ? `<small>${sub}</small>` : ''}</span><i>›</i></div>` });
   }
   const list = [...rows.filter(r => r.live), ...rows.filter(r => !r.live)].map(r => r.html).join('');
   const strip = off.length ? `<div class="offrow">${off.map(t => `<div class="offc" style="border-color:${t.color}">${logoImg(t.logo)}<b>${esc(t.label)}</b><span>Offseason</span></div>`).join('')}</div>` : '';
@@ -1465,7 +1520,7 @@ function pickerHTML(){
     <div class="pklg">${LEAGUES.map(l => `<button data-pklg="${l.code}" class="${l.code === pkLeague ? 'on' : ''}">${l.name}</button>`).join('')}</div>
     <input id="pkq" type="search" placeholder="Search ${esc(L.name)} teams" value="${esc(pkQuery)}" autocomplete="off">
     <div id="pklist"><div class="dim" style="padding:1rem">Loading teams…</div></div>
-    <div class="pkfoot"><button data-pkshare>Share my teams</button>${WRES || IS_DEFAULT ? '<button data-pkmn>Use Minnesota lineup</button>' : ''}</div>
+    ${WRES || IS_DEFAULT ? '<div class="pkfoot"><button data-pkmn>Use Minnesota lineup</button></div>' : ''}
   </div>`;
 }
 async function pickerList(){
@@ -1502,6 +1557,7 @@ function mobileContent(){
     case 'wr':   return panelWrestling().html;
     case 'news': return panelNews().html;
   }
+  if (LEAGUES.some(L => L.code === mTab)) return panelLeague(mTab);
   return '';
 }
 function mobileRender(keepScroll){
@@ -1509,8 +1565,11 @@ function mobileRender(keepScroll){
   const anyLive = CFG.mnTeams.some((t,i) => t.events && teamState(t,i).live);
   const nflLive = (D.nfl || []).some(e => e.state === 'in'), nbaLive = (D.nba || []).some(e => e.state === 'in');
   const liveDot = { mn: anyLive, nfl: nflLive, nba: nbaLive };
-  if (mTab === 'wr' && !WRES) mTab = 'mn';
-  $('#tabs').innerHTML = tabsList().map(([k,l]) => `<button data-tab="${k}" class="${k === mTab && !mDetail ? 'on' : ''}">${l}${liveDot[k] ? '<i class="ld8"></i>' : ''}</button>`).join('');
+  LEAGUES.forEach(L => { if (D['lg_' + L.code]?.some(e => e.state === 'in' && (!L.sport || e.teams.some(x => x.rank)))) liveDot[L.code] = true; });
+  const tl = tabsList();
+  if (!tl.some(([k]) => k === mTab)) mTab = 'mn';
+  $('#tabs').innerHTML = tl.map(([k,l]) => `<button data-tab="${k}" class="${k === mTab && !mDetail ? 'on' : ''}">${l}${liveDot[k] ? '<i class="ld8"></i>' : ''}</button>`).join('');
+  const onTab = $('#tabs button.on'); if (onTab){ const tb = $('#tabs'); tb.scrollLeft = onTab.offsetLeft - (tb.clientWidth - onTab.offsetWidth) / 2; }
   if (mPick){ $('#stage').innerHTML = `<div class="panel show mp">${pickerHTML()}</div>`; pickerList(); return; }
   $('#stage').innerHTML = `<div class="panel show mp">${mobileContent()}</div>`;
   if (keepScroll) window.scrollTo(0, y);
