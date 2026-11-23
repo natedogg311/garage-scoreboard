@@ -965,8 +965,8 @@ function gameTile(e, mnIds, path){
   const hideRec = hiddenIds(path);
   if (hid(e, path)){
     const rows = e.teams.map(x => `<div class="row">${logoImg(x.logo)}<span class="ab">${esc(x.abbr)}</span><span class="rc"></span><span class="sc"></span></div>`).join('');
-    const ht = teamFor(e, path);
-    return `<div class="g hidg ${glowCls(ht)} mn"${glowSty(ht)} data-gid="${e.id}" data-path="${path || ''}">${rows}<div class="st"><span class="hidt">Score hidden</span><span>${esc(e.tv)}</span></div></div>`;
+    const ht = teamFor(e, path), hg = ht ? (ht.glow || lighten(ht.color)) : null;
+    return `<div class="g hidg mn ${hg ? 'glow' : ''}"${hg ? ` style="--gl:${hg}"` : ''} data-gid="${e.id}" data-path="${path || ''}">${rows}<div class="st"><span class="hidt">Score hidden</span><span>${esc(e.tv)}</span></div></div>`;
   }
   const live = e.state === 'in', pre = e.state === 'pre', post = e.state === 'post';
   const ups = upsetML(e);
@@ -998,8 +998,8 @@ function gameTile(e, mnIds, path){
   } else {
     st = `<div class="st lv"><span>${esc(e.detail)}</span><span>${sitText(e) || (isMN ? esc(e.tv) : '')}</span></div>`;
   }
-  const mt = isMN ? teamFor(e, path) : null;
-  return `<div class="g ${live ? 'live' : ''} ${isMN ? 'mn ' + glowCls(mt) : ''}"${glowSty(mt)} data-gid="${e.id}" data-path="${path || ''}">${rows}${st}</div>`;
+  const mt = isMN ? teamFor(e, path) : null, gl = mt ? (mt.glow || lighten(mt.color)) : null;
+  return `<div class="g ${live ? 'live' : ''} ${gl ? 'mn glow' : ''}"${gl ? ` style="--gl:${gl}"` : ''} data-gid="${e.id}" data-path="${path || ''}">${rows}${st}</div>`;
 }
 function sortGames(list){
   const o = { in:0, pre:1, post:2 };
