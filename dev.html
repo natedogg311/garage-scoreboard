@@ -95,7 +95,7 @@ tr.mnv td:first-child{box-shadow:inset .3rem 0 0 var(--neonP)}
 tr.mn.mnw td{background:rgba(141,255,58,.22)}
 tr.mnw td:first-child{box-shadow:inset .3rem 0 0 var(--neonG)}
 .wolvesSub{color:var(--gl,var(--neonG))!important;text-shadow:0 0 .5rem color-mix(in srgb,var(--gl,var(--neonG)) 60%,transparent)}
-.g.glow,.card.glow,.wli.glow{border:2px solid var(--gl);box-shadow:0 0 .9rem color-mix(in srgb,var(--gl) 70%,transparent),inset 0 0 .5rem color-mix(in srgb,var(--gl) 22%,transparent)}
+.g.glow,.card.glow,.wli.glow,.tl.glow{border:2px solid var(--gl);box-shadow:0 0 .9rem color-mix(in srgb,var(--gl) 70%,transparent),inset 0 0 .5rem color-mix(in srgb,var(--gl) 22%,transparent)}
 .g.mn.glow{background:linear-gradient(90deg,color-mix(in srgb,var(--gl) 18%,transparent),var(--panel) 65%)}
 tr.mn[style] td{background:color-mix(in srgb,var(--gl) 26%,transparent)}
 tr.mn[style] td:first-child{box-shadow:inset .3rem 0 0 var(--gl)}
@@ -278,8 +278,7 @@ tr.cut td{border-bottom:2px dashed var(--line)}
   .livebox{font-size:1.5rem}
   .g{cursor:pointer}
   .gs{overflow:visible;gap:.7rem}
-  .gsTop{grid-template-columns:1fr 1fr;grid-template-areas:"mid mid" "a h";padding:.8rem;gap:.6rem 1.4rem;position:relative}
-  .gsTop::after{content:"–";position:absolute;left:50%;bottom:1.1rem;transform:translateX(-50%);color:var(--dim);font-size:1.6rem;font-weight:800}
+  .gsTop{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"mid mid" "a h";padding:.8rem .6rem;gap:.6rem .9rem;position:relative}
   .wli .wk{width:5.9rem;flex:none;white-space:nowrap}
   .wli .wt{display:flex;flex-direction:column;align-items:center;width:2.4rem;flex:none}
   .wli .wt img{width:1.5rem;height:1.5rem;object-fit:contain}
@@ -287,11 +286,13 @@ tr.cut td{border-bottom:2px dashed var(--line)}
   .wli .chip{font-size:.68rem}
   .gsTop.pre::after{content:none}
   .gsMid{grid-area:mid;min-width:0}
-  .gsSide{grid-area:a;gap:.6rem;padding-left:.5rem;border-left-width:.3rem}
-  .gsSide.home{grid-area:h;padding-right:.5rem;border-right-width:.3rem}
-  .gsLogo{width:2.6rem;height:2.6rem}
-  .gsAb{font-size:1.25rem}
-  .gsScore{font-size:2.4rem}
+  .gsSide{grid-area:a;gap:.45rem;padding-left:.45rem;border-left-width:.3rem;min-width:0}
+  .gsSide.home{grid-area:h;padding-right:.45rem;border-right-width:.3rem}
+  .gsSide .gsName{min-width:0}
+  .gsLogo{width:2.1rem;height:2.1rem;flex:none}
+  .gsAb{font-size:1.1rem;white-space:nowrap}
+  .gsRec{font-size:.85rem}
+  .gsScore{font-size:clamp(1.6rem,8.5vw,2.3rem);flex:none}
   .gsState{font-size:1.2rem}
   .gsSit{font-size:.95rem}
   .story{white-space:normal;font-size:1rem}
@@ -342,6 +343,23 @@ tr.cut td{border-bottom:2px dashed var(--line)}
 .pkr.on{background:color-mix(in srgb,var(--gold) 12%,transparent)}.pkr.on i{color:var(--gold)}
 .pkfoot{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
 .pkfoot button{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:.5rem;padding:.6rem;font-weight:700;font-size:.85rem}
+/* My Teams lines */
+.tl{display:flex;align-items:center;gap:.7rem;background:var(--panel);border-radius:.6rem;padding:.7rem .75rem;cursor:pointer;margin-bottom:.55rem;border:2px solid transparent}
+.tlg{display:flex;flex-direction:column;align-items:center;gap:.15rem;width:2.5rem;flex:none}
+.tlg img{width:2rem;height:2rem;object-fit:contain}
+.tlg small{font-size:.55rem;font-weight:800;color:var(--dim);letter-spacing:.06em}
+.tlm{flex:1;min-width:0}
+.tln{display:flex;align-items:baseline;gap:.45rem;font-size:1.08rem}
+.tln b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tln span{color:var(--dim);font-size:.82rem;font-weight:600;white-space:nowrap}
+.tlx{font-size:.92rem;color:var(--text);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tls{font-size:.75rem;color:var(--dim);margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tlr{display:flex;flex-direction:column;align-items:flex-end;gap:.3rem;flex:none;text-align:right}
+.tlk{font-size:.62rem;font-weight:900;letter-spacing:.07em;color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);border-radius:.3rem;padding:.12rem .4rem}
+.tlk.lv{background:var(--live);color:#fff}
+.tlb{font-size:1.35rem;font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tlb .win{color:#3ddc84}.tlb .loss{color:#ff5b5b}
+.tls .win{color:#3ddc84}.tls .loss{color:#ff5b5b}
 /* install helper */
 .inst{position:relative;background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 18%,var(--panel)),var(--panel));border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);border-radius:.7rem;padding:.8rem .9rem;margin-bottom:.9rem;font-size:.9rem}
 .inst>b{display:block;font-size:1rem;margin-bottom:.35rem;padding-right:1.5rem}
@@ -396,12 +414,12 @@ const CFG = {
   mnTeams: [
     { label: 'Vikings',            path: 'football/nfl',                        team: 'min',   color: '#4f2683', glow: '#b56cff', loc: 'Minnesota' },
     { label: 'Timberwolves',       path: 'basketball/nba',                      team: 'min',   color: '#236192', glow: '#8dff3a', loc: 'Minnesota', short: 'Wolves' },
-    { label: 'Wild',               path: 'hockey/nhl',                          team: 'min',   color: '#154734' },
+    { label: 'Wild',               path: 'hockey/nhl',                          team: 'min',   color: '#154734', alt: '#a6192e' },
     { label: 'Twins',              path: 'baseball/mlb',                        team: 'min',   color: '#002b5c' },
     { label: 'Lynx',               path: 'basketball/wnba',                     team: 'min',   color: '#266092' },
     { label: 'Minnesota United',   path: 'soccer/usa.1',                        team: '17362', color: '#8cd2f4' },
-    { label: 'Gophers Football',   path: 'football/college-football',           team: '135',   color: '#7a0019', sb: 'groups=5' },
-    { label: 'Gophers Basketball', path: 'basketball/mens-college-basketball',  team: '135',   color: '#7a0019', sb: 'groups=7' },
+    { label: 'Gophers Football',   path: 'football/college-football',           team: '135',   color: '#7a0019', alt: '#ffcc33', sb: 'groups=5' },
+    { label: 'Gophers Basketball', path: 'basketball/mens-college-basketball',  team: '135',   color: '#7a0019', alt: '#ffcc33', sb: 'groups=7' },
   ],
   // ESPN has no college wrestling feed. A GitHub Action refreshes wrestling.json every 2 hours
   // (gophersports.com schedule + NWCA Coaches Poll); this block is only the fallback if that file can't be read.
@@ -459,8 +477,10 @@ let PICKS = 'mn', WRES = true, IS_DEFAULT = true;
 function readPicks(){
   try {
     const q = new URLSearchParams(location.search);
-    if (q.has('wres')) localStorage.setItem('ysWres', q.get('wres') === '0' ? '0' : '1');
-    if (q.has('teams')){
+    // a link's teams apply only when this browser (or home-screen app) has none saved yet,
+    // so an iPhone home-screen app opened from ?teams=... starts with the picks made in Safari
+    if (q.has('wres') && localStorage.getItem('ysWres') === null) localStorage.setItem('ysWres', q.get('wres') === '0' ? '0' : '1');
+    if (q.has('teams') && localStorage.getItem('ysTeams') === null){
       const v = q.get('teams');
       localStorage.setItem('ysTeams', v === 'mn' ? 'mn' : JSON.stringify(v.split(',').map(x => { const [c, id] = x.split(':'); return { c, id }; }).filter(x => lgOf((LEAGUES.find(l => l.code === x.c) || {}).path) && x.id)));
     } else if (q.get('wres') === '1' && localStorage.getItem('ysTeams') === null) localStorage.setItem('ysTeams', 'mn');
@@ -673,7 +693,8 @@ async function fetchSummary(e, path){
       D.sum[e.id] = {
         leaders: (s.leaders || []).map(t => ({ abbr: t.team?.abbreviation, cats: (t.leaders || []).map(l => ({
           name: l.displayName || l.name, val: l.leaders?.[0]?.displayValue || '', who: l.leaders?.[0]?.athlete?.shortName || '' })).filter(x => x.val) })),
-        scoring: (s.scoringPlays || []).map(p => ({ per: p.period?.number, clock: p.clock?.displayValue || '', team: p.team?.abbreviation || '',
+        // football has scoringPlays; hockey, soccer and baseball may only flag scoring plays inside plays
+        scoring: ((s.scoringPlays?.length ? s.scoringPlays : (s.plays || []).filter(p => p.scoringPlay)) || []).map(p => ({ per: p.period?.number, clock: p.clock?.displayValue || '', team: p.team?.abbreviation || hc.find(c => c.team?.id === p.team?.id)?.team?.abbreviation || '',
           type: p.scoringType?.abbreviation || p.type?.abbreviation || p.type?.text || '', text: p.text || '', a: p.awayScore, h: p.homeScore })),
         odds: pc ? { line: pc.details || '', ou: pc.overUnder, book: pc.provider?.name || '',
           mlHome: pc.homeTeamOdds?.moneyLine, mlAway: pc.awayTeamOdds?.moneyLine } : null,
@@ -871,13 +892,13 @@ function hiddenIds(path){ const ids = new Set(); hiddenGames(path).forEach(e => 
 function hiddenBox(e, what){
   const [a, h] = e.teams;
   return `<div class="hidbox">${logoImg(a.logo)}<b>${esc(a.abbr)} @ ${esc(h.abbr)}</b>${logoImg(h.logo)}
-    <div class="hidmsg">${what || 'Score hidden, you are watching on delay'}</div>
+    <div class="hidmsg">${what || 'Score hidden'}</div>
     ${PHONE ? `<button class="revbtn" data-reveal="${e.id}">Reveal score</button>` : ''}</div>`;
 }
 function shieldBar(){
   const ts = CFG.mnTeams.filter((t,i) => t.events && !teamState(t,i).off);
   if (!ts.length) return '';
-  return `<div class="shbar"><span>Watching on delay?</span><div class="shb">${ts.map(t => { const on = SH.on[tkey(t)];
+  return `<div class="shbar"><span>Hide scores</span><div class="shb">${ts.map(t => { const on = SH.on[tkey(t)];
     return `<button data-shield="${esc(tkey(t))}" class="${on ? 'on' : ''}" style="--gl:${tglow(t)}" title="${esc(t.label)}">${logoImg(t.logo)}${on ? '<b>ON</b>' : ''}</button>`; }).join('')}</div></div>`;
 }
 
@@ -894,7 +915,7 @@ function panelMN(){
     if (s.live && hid(s.live)){
       const [a,h] = s.live.teams;
       inner = `<div class="livebox">${logoImg(a.logo)}${esc(a.abbr)} @ ${esc(h.abbr)}${logoImg(h.logo)}</div>
-        <div class="line"><span class="chip">ON DELAY</span><span class="hidt">Score hidden</span></div>`;
+        <div class="line"><span class="chip">HIDDEN</span><span class="hidt">Score hidden</span></div>`;
     } else if (s.live){
       const [a,h] = s.live.teams;
       inner = `<div class="livebox tnum">${logoImg(a.logo)}${esc(a.abbr)} ${esc(a.score)}<span style="color:var(--dim)">–</span>${esc(h.score)} ${esc(h.abbr)}${logoImg(h.logo)}</div>
@@ -965,7 +986,15 @@ function panelLeague(code){
 }
 function satOf(hex){ const h = (hex || '').replace('#',''); if (h.length < 6) return 0; const [r,g,b] = [0,2,4].map(i => parseInt(h.substr(i,2),16)/255); const mx = Math.max(r,g,b), mn = Math.min(r,g,b); return mx - mn; }
 // a team's glow: its own glow if set, else its color brightened (or its second color when the main one is black, white or gray)
-function tglow(t){ if (!t) return 'var(--gold)'; if (t.glow) return t.glow; const c = satOf(t.color) < .12 && satOf(t.alt) >= .12 ? t.alt : t.color; return satOf(c) < .12 ? 'hsl(45 20% 82%)' : lighten(c); }
+function lumOf(hex){ const h = (hex || '').replace('#',''); if (h.length < 6) return 0; const v = [0,2,4].map(i => parseInt(h.substr(i,2),16)/255); return (Math.max(...v) + Math.min(...v)) / 2; }
+// glow color: the team's own glow if set; otherwise its main color brightened, or its second color when
+// the main one is too dark to glow true (maroon turns red, dark green turns mint) or has no color at all
+function tglow(t){
+  if (!t) return 'var(--gold)'; if (t.glow) return t.glow;
+  const altOk = satOf(t.alt) >= .12;
+  const c = (satOf(t.color) < .12 || lumOf(t.color) < .25) && altOk ? t.alt : t.color;
+  return satOf(c) < .12 ? 'hsl(45 20% 82%)' : lighten(c);
+}
 function teamFor(e, path){ return CFG.mnTeams.find(t => t.path === path && t.id && e?.teams?.some(x => x.id === t.id)) || null; }
 const glowCls = t => t?.glow ? 'glow' : '';
 const glowSty = t => t?.glow ? ` style="--gl:${t.glow}"` : '';
@@ -975,7 +1004,7 @@ function gameTile(e, mnIds, path){
   const hideRec = hiddenIds(path);
   if (hid(e, path)){
     const rows = e.teams.map(x => `<div class="row">${logoImg(x.logo)}<span class="ab">${esc(x.abbr)}</span><span class="rc"></span><span class="sc"></span></div>`).join('');
-    const ht = teamFor(e, path), hg = ht ? (tglow(ht)) : null;
+    const ht = teamFor(e, path), hg = ht && e.state === 'in' ? tglow(ht) : null;
     return `<div class="g hidg mn ${hg ? 'glow' : ''}"${hg ? ` style="--gl:${hg}"` : ''} data-gid="${e.id}" data-path="${path || ''}">${rows}<div class="st"><span class="hidt">Score hidden</span><span>${esc(e.tv)}</span></div></div>`;
   }
   const live = e.state === 'in', pre = e.state === 'pre', post = e.state === 'post';
@@ -1008,7 +1037,9 @@ function gameTile(e, mnIds, path){
   } else {
     st = `<div class="st lv"><span>${esc(e.detail)}</span><span>${sitText(e) || (isMN ? esc(e.tv) : '')}</span></div>`;
   }
-  const mt = isMN ? teamFor(e, path) : null, gl = mt ? (tglow(mt)) : null;
+  const mt = isMN ? teamFor(e, path) : null;
+  const playingToday = live || (pre && ymd(new Date(e.date)) === ymd(new Date()));
+  const gl = mt && playingToday ? tglow(mt) : null;
   return `<div class="g ${live ? 'live' : ''} ${gl ? 'mn glow' : ''}"${gl ? ` style="--gl:${gl}"` : ''} data-gid="${e.id}" data-path="${path || ''}">${rows}${st}</div>`;
 }
 function sortGames(list){
@@ -1140,12 +1171,14 @@ function leadersBox(sum, e, emptyMsg){
       : `<div class="ld"><span class="lc">${esc(c.name.replace(/ Yards$/,'').replace(/ Leader$/,''))}</span><span class="lw">${esc(c.who)}</span><span class="lv tnum">${esc(c.val)}</span></div>`).join('') || '<div class="dim">No stats yet</div>'}</div>`;
   }).join('');
 }
-function scoringBox(sum, max, live){
+function scoringBox(sum, max, live, path = ''){
   const sp = sum?.scoring || [];
+  const per = p => path.includes('hockey') ? (p.per > 3 ? (p.per > 4 ? 'SO' : 'OT') : 'P' + p.per)
+    : path.includes('baseball') ? 'Inn ' + p.per : path.includes('soccer') ? '' : (p.per > 4 ? 'OT' : 'Q' + p.per);
   if (!sp.length) return '<div class="dim">No scoring yet</div>';
   // phone: every scoring play (newest first while live, in game order once final); TV: the latest few to fit the screen
   const list = PHONE ? (live ? [...sp].reverse() : sp) : sp.slice(-(max || 7)).reverse();
-  return list.map(p => `<div class="sp"><span class="sq">Q${p.per} ${esc(p.clock)}</span><span class="st2">${esc(p.team)} ${esc(p.type)}</span><span class="stx">${esc(p.text)}</span><span class="ss tnum">${p.a ?? ''}-${p.h ?? ''}</span></div>`).join('');
+  return list.map(p => `<div class="sp"><span class="sq">${per(p)} ${esc(p.clock)}</span><span class="st2">${esc(p.team)} ${esc(p.type)}</span><span class="stx">${esc(p.text)}</span><span class="ss tnum">${p.a ?? ''}-${p.h ?? ''}</span></div>`).join('');
 }
 function injuryBox(sum, t, max){
   const L = (sum?.injuries || []).find(x => x.abbr === t.abbr)?.list || [];
@@ -1202,7 +1235,7 @@ function boxScoreBox(sum, t){
 function panelBox(g){
   const e = findEvent(g.e.id) || g.e, sum = D.sum[e.id];
   const [a, h] = e.teams;
-  if (hid(e, g.path)) return { title: `On delay · ${a.abbr} @ ${h.abbr}`, html: hiddenBox(e) };
+  if (hid(e, g.path)) return { title: `Hidden · ${a.abbr} @ ${h.abbr}`, html: hiddenBox(e) };
   return { title: `Box Score · ${a.abbr} ${a.score} @ ${h.abbr} ${h.score}`,
     html: `<div class="bxgrid"><div class="box">${boxScoreBox(sum, a)}</div><div class="box">${boxScoreBox(sum, h)}</div></div>` };
 }
@@ -1230,7 +1263,7 @@ function panelGame(g){
   const sum = D.sum[e.id];
   const [a, h] = e.teams;
   if (!a || !h) return { title:'Game', html:'<div class="empty">Game data unavailable</div>' };
-  if (hid(e, g.path)) return { title: `On delay · ${a.abbr} @ ${h.abbr}`, html: hiddenBox(e) };
+  if (hid(e, g.path)) return { title: `Hidden · ${a.abbr} @ ${h.abbr}`, html: hiddenBox(e) };
   const hideRec = hiddenIds(g.path);
   const live = e.state === 'in', fb = g.path.startsWith('football');
   const s = e.sit || {};
@@ -1272,18 +1305,18 @@ function panelGame(g){
       <div style="margin-top:1rem">${lineScore(e, sum)}</div>
       ${wpNow ? `<h3 style="margin-top:1rem">WIN PROBABILITY</h3>${wpNow}${wpChart(sum, e)}` : ''}</div>`;
     cols = fb
-      ? `${playBox}<div class="box"><h3>LEADERS</h3>${leadersBox(sum, e)}</div><div class="box"><h3>TEAM STATS</h3>${statsBox(sum, e, g.path)}<h3 style="margin-top:.8rem">SCORING</h3>${scoringBox(sum, 4, true)}</div>`
-      : `${playBox}<div class="box"><h3>LEADERS</h3>${leadersBox(sum, e)}</div><div class="box"><h3>TEAM STATS</h3>${statsBox(sum, e, g.path)}</div>`;
+      ? `${playBox}<div class="box"><h3>LEADERS</h3>${leadersBox(sum, e)}</div><div class="box"><h3>TEAM STATS</h3>${statsBox(sum, e, g.path)}<h3 style="margin-top:.8rem">SCORING</h3>${scoringBox(sum, 4, true, g.path)}</div>`
+      : `${playBox}<div class="box"><h3>LEADERS</h3>${leadersBox(sum, e)}</div><div class="box"><h3>TEAM STATS</h3>${statsBox(sum, e, g.path)}${g.path.includes('basketball') ? '' : `<h3 style="margin-top:.8rem">SCORING</h3>${scoringBox(sum, 4, true, g.path)}`}</div>`;
   } else {
     // final: post-game card
     mid = `<div class="gsState">${esc(e.detail || 'Final')}</div><div class="gsSit">${fmt(new Date(e.date), { weekday:'long', month:'short', day:'numeric' })}</div><div class="gsTv">${esc(e.venue?.name || sum?.venue?.name || '')}</div>`;
     if (sum?.story) story = `<div class="story"><span class="chip">RECAP</span>${esc(sum.story)}</div>`;
     const c1 = `<div class="box"><h3>SCORE BY ${fb ? 'QUARTER' : 'PERIOD'}</h3>${lineScore(e, sum)}${fb && sum?.wp?.length > 2 ? `<h3 style="margin-top:1rem">HOW IT SWUNG</h3>${wpChart(sum, e)}` : ''}<h3 style="margin-top:1rem">TEAM STATS</h3>${statsBox(sum, e, g.path)}</div>`;
     cols = fb
-      ? `${c1}<div class="box"><h3>GAME LEADERS</h3>${leadersBox(sum, e, 'Leaders not available')}</div><div class="box"><h3>SCORING</h3>${scoringBox(sum)}</div>`
+      ? `${c1}<div class="box"><h3>GAME LEADERS</h3>${leadersBox(sum, e, 'Leaders not available')}</div><div class="box"><h3>SCORING</h3>${scoringBox(sum, 0, false, g.path)}</div>`
       : (PHONE && g.path.includes('basketball')
         ? `${c1}<div class="box"><h3>GAME LEADERS</h3>${leadersBox(sum, e, 'Leaders not available')}</div><div class="box"><h3>BOX SCORE</h3>${boxScoreBox(sum, e.teams[0])}<div style="height:1rem"></div>${boxScoreBox(sum, e.teams[1])}</div>`
-        : `${c1}<div class="box"><h3>GAME LEADERS</h3>${leadersBox(sum, e, 'Leaders not available')}</div><div class="box"><h3>TOP PERFORMERS</h3>${performersBox(sum, e)}</div>`);
+        : `${c1}<div class="box"><h3>GAME LEADERS</h3>${leadersBox(sum, e, 'Leaders not available')}</div><div class="box">${PHONE && !g.path.includes('basketball') ? `<h3>SCORING</h3>${scoringBox(sum, 0, false, g.path)}<h3 style="margin-top:1rem">TOP PERFORMERS</h3>` : '<h3>TOP PERFORMERS</h3>'}${performersBox(sum, e)}</div>`);
   }
   const isMN = CFG.mnTeams.some(t => e.teams.some(x => x.id === t.id && t.path === g.path));
   const title = (e.state === 'pre' ? (ymd(new Date(e.date)) === ymd(new Date()) ? 'Game Day · ' : 'Preview · ') : live ? 'Live · ' : 'Recap · ') + `${a.abbr} @ ${h.abbr}`;
@@ -1427,7 +1460,7 @@ function refreshView(){ if (PHONE) mobileRender(true); else rerenderSoft(); }
 
 function kindLabel(g){
   const e = findEvent(g.e.id) || g.e;
-  if (hid(e, g.path)) return '<span class="chip">ON DELAY</span>';
+  if (hid(e, g.path)) return '<span class="chip">HIDDEN</span>';
   if (e.state === 'in') return '<span class="pill">LIVE</span>';
   if (e.state === 'pre') return `<span class="chip">${ymd(new Date(e.date)) === ymd(new Date()) ? 'GAME DAY' : 'PREVIEW'}</span>`;
   return '<span class="chip">RECAP</span>';
@@ -1459,53 +1492,75 @@ function watchList(){
 function mnList(){
   const LEAGUE = { 'football/nfl':'NFL', 'basketball/nba':'NBA', 'hockey/nhl':'NHL', 'baseball/mlb':'MLB', 'basketball/wnba':'WNBA',
     'soccer/usa.1':'MLS', 'football/college-football':'CFB', 'basketball/mens-college-basketball':'CBB' };
-  const today = ymd(new Date()), yest = ymd(new Date(Date.now() - 864e5));
-  const chip = t => `<span class="chip">${t}</span>`;
-  const shortRes = (e, id, noOpp) => {
-    if (hid(e)) return 'Score hidden';
-    const me = e.teams.find(x => x.id === id), op = e.teams.find(x => x.id !== id);
-    if (!me || !op) return '';
-    const r = +me.score > +op.score ? 'W' : +me.score < +op.score ? 'L' : 'T';
-    return `${r} ${esc(me.score)}-${esc(op.score)}` + (noOpp ? '' : ` ${me.home ? 'vs' : '@'} ${esc(op.abbr)}`);
-  };
-  const nextShort = (e, id) => { const me = e.teams.find(x => x.id === id), op = e.teams.find(x => x.id !== id);
-    return `${me?.home ? 'vs' : '@'} ${esc(op?.abbr || '')} ${whenText(e.date)}`; };
+  const now = new Date(), today = ymd(now), yest = ymd(new Date(now - 864e5)), tmw = ymd(new Date(+now + 864e5));
+  const chip = (t, cls = '') => `<span class="tlk ${cls}">${t}</span>`;
+  const tm = d => fmt(d, { hour:'numeric', minute:'2-digit' });
+  // the "when" for an upcoming game, short: Tonight, Tomorrow, Fri, 12/6
+  const dayShort = d => { d = new Date(d); const k = ymd(d);
+    return k === today ? (+fmt(d, { hour:'numeric', hour12:false }) >= 17 ? 'Tonight' : 'Today') : k === tmw ? 'Tomorrow'
+      : d - now < 6*864e5 ? fmt(d, { weekday:'short' }) : fmt(d, { month:'numeric', day:'numeric' }); };
+  const sides = (e, id) => { const me = e.teams.find(x => x.id === id) || e.teams[1], op = e.teams.find(x => x !== me) || e.teams[0]; return { me, op, va: me.home ? 'vs' : '@' }; };
+  const res = (e, id) => { const { me, op } = sides(e, id); const r = +me.score > +op.score ? 'W' : +me.score < +op.score ? 'L' : 'T';
+    return `<span class="${r === 'W' ? 'win' : r === 'L' ? 'loss' : ''}">${r}</span> ${esc(me.score)}-${esc(op.score)}`; };
+  const lastTxt = (e, id) => { if (hid(e)) return 'Last: score hidden'; const { op, va } = sides(e, id); return `Last: ${res(e, id)} ${va} ${esc(op.abbr)}`; };
+  const nextTxt = (e, id) => { const { op, va } = sides(e, id); return `Next: ${va} ${esc(op.abbr)} · ${dayShort(e.date)} ${tm(e.date)}`; };
+  const line = ({ cls = '', sty = '', attrs, logo, lg, name, rec, kind, big, x, sub }) =>
+    `<div class="tl ${cls}"${sty} ${attrs}><div class="tlg">${logoImg(logo)}<small>${lg}</small></div>
+      <div class="tlm"><div class="tln"><b>${esc(name)}</b>${rec ? `<span>${esc(rec)}</span>` : ''}</div><div class="tlx">${x}</div>${sub ? `<div class="tls">${sub}</div>` : ''}</div>
+      <div class="tlr">${kind}<div class="tlb">${big}</div></div></div>`;
   const rows = [], off = [];
   CFG.mnTeams.forEach((t, i) => {
     if (!t.events) return;
     const s = teamState(t, i);
     if (s.off){ off.push(t); return; }
     const full = e => findEvent(e.id) || e;
-    const lastRecent = s.last && [today, yest].includes(ymd(new Date(s.last.date)));
-    let e, kind, right = '', sub = '';
-    if (s.live){ e = full(s.live); kind = hid(e) ? chip('ON DELAY') : '<span class="pill">LIVE</span>';
-      right = hid(e) ? '<span class="hidt">Score hidden</span>' : `${esc(e.teams[0].abbr)} ${esc(e.teams[0].score)} – ${esc(e.teams[1].score)} ${esc(e.teams[1].abbr)}`;
-      sub = hid(e) ? '' : esc(e.detail) + (e.tv ? ' · ' + esc(e.tv) : ''); }
-    else if (s.next && previewTime(s.next.date)){ e = full(s.next); kind = chip(ymd(new Date(e.date)) === today ? 'GAME DAY' : 'PREVIEW');
-      right = whenText(e.date) + (e.tv ? ' · ' + esc(e.tv) : ''); sub = s.last ? 'Last: ' + shortRes(s.last, t.id) : ''; }
-    else if (lastRecent){ e = full(s.last); kind = hid(e) ? chip('ON DELAY') : chip('RECAP');
-      right = hid(e) ? '<span class="hidt">Score hidden</span>' : `${shortRes(e, t.id, true)} · Final`; sub = s.next ? 'Next: ' + nextShort(s.next, t.id) : ''; }
-    else if (s.next){ e = full(s.next); kind = chip('NEXT');
-      right = whenText(e.date) + (e.tv ? ' · ' + esc(e.tv) : ''); sub = s.last ? 'Last: ' + shortRes(s.last, t.id) : ''; }
-    else if (s.last){ e = full(s.last); kind = chip('LAST'); right = shortRes(e, t.id); }
+    const recent = s.last && [today, yest].includes(ymd(new Date(s.last.date)));
+    let e, kind, big = '', x = '', sub = '';
+    if (s.live){
+      e = full(s.live); const { me, op, va } = sides(e, t.id);
+      if (hid(e)){ kind = chip('HIDDEN'); big = '<span class="hidt">Hidden</span>'; x = `${va} ${esc(op.abbr)} · score hidden`; }
+      else { kind = chip('LIVE', 'lv'); big = `${esc(me.score)}–${esc(op.score)}`; x = `${va} ${esc(op.abbr)} · ${esc(e.detail)}${e.tv ? ' · ' + esc(e.tv) : ''}`; }
+    } else if (s.next && previewTime(s.next.date)){
+      e = full(s.next); const { op, va } = sides(e, t.id);
+      kind = chip(ymd(new Date(e.date)) === today ? 'GAME DAY' : 'PREVIEW', 'gd'); big = dayShort(e.date);
+      x = `${va} ${esc(op.abbr)} · ${tm(e.date)}${e.tv ? ' · ' + esc(e.tv) : ''}`; sub = s.last ? lastTxt(s.last, t.id) : '';
+    } else if (recent){
+      e = full(s.last); const { op, va } = sides(e, t.id);
+      kind = chip(hid(e) ? 'HIDDEN' : 'FINAL'); big = hid(e) ? '<span class="hidt">Hidden</span>' : res(e, t.id);
+      x = `${va} ${esc(op.abbr)} · ${ymd(new Date(e.date)) === today ? 'Today' : 'Yesterday'}`; sub = s.next ? nextTxt(s.next, t.id) : '';
+    } else if (s.next){
+      e = full(s.next); const { op, va } = sides(e, t.id);
+      kind = chip('NEXT'); big = dayShort(e.date); x = `${va} ${esc(op.abbr)} · ${tm(e.date)}${e.tv ? ' · ' + esc(e.tv) : ''}`; sub = s.last ? lastTxt(s.last, t.id) : '';
+    } else if (s.last){
+      e = full(s.last); const { op, va } = sides(e, t.id);
+      kind = chip('LAST'); big = hid(e) ? '<span class="hidt">Hidden</span>' : res(e, t.id); x = `${va} ${esc(op.abbr)}`;
+    }
     if (!e) return;
-    const [a, h] = e.teams;
-    const rec = hiddenIds(t.path).has(t.id) ? '' : t.rec;
     const hot = !!s.live || (s.next && e === full(s.next) && ymd(new Date(e.date)) === today);
-    rows.push({ live: !!s.live, html: `<div class="wli ${hot ? 'glow' : ''}"${hot ? ` style="--gl:${tglow(t)}"` : ''} data-gid="${e.id}" data-path="${t.path}"><span class="wk">${kind}</span><span class="wt">${logoImg(t.logo)}<small>${LEAGUE[t.path] || ''}</small></span><span class="wm"><b>${esc(a?.abbr)} @ ${esc(h?.abbr)}</b>${rec ? `<small>${esc(rec)}</small>` : ''}</span><span class="wr">${right}${sub ? `<small>${sub}</small>` : ''}</span><i>›</i></div>` });
+    rows.push({ live: !!s.live, html: line({ cls: hot ? 'glow' : '', sty: hot ? ` style="--gl:${tglow(t)}"` : '', attrs: `data-gid="${e.id}" data-path="${t.path}"`,
+      logo: t.logo, lg: LEAGUE[t.path] || '', name: t.label, rec: hiddenIds(t.path).has(t.id) ? '' : t.rec, kind, big, x, sub }) });
   });
   // Gophers wrestling
-  const w = wrestNext(), wLogo = GOPHER_LOGO;
+  const w = wrestNext();
   if (WRES && (w.next || w.last)){
     const wd = e => ymd(wrestDate(e));
-    let kind, opp, right, sub = '';
-    const lastLine = w.last && w.last.result ? `Last: ${esc(w.last.result)} ${esc(w.last.opp)}` : '';
-    if (w.next && (wd(w.next) === today || previewTime(wrestDate(w.next)))){ kind = wd(w.next) === today ? 'GAME DAY' : 'PREVIEW'; opp = w.next.opp; right = wrestWhen(w.next) + (w.next.tv ? ' · ' + esc(w.next.tv) : ''); sub = lastLine; }
-    else if (w.last && w.last.result && [today, yest].includes(wd(w.last))){ kind = 'RESULT'; opp = w.last.opp; right = esc(w.last.result); sub = w.next ? `Next: ${esc(w.next.opp)} ${wrestWhen(w.next)}` : ''; }
-    else if (w.next){ kind = 'NEXT'; opp = w.next.opp; right = wrestWhen(w.next) + (w.next.tv ? ' · ' + esc(w.next.tv) : ''); sub = lastLine; }
-    else { kind = 'LAST'; opp = w.last.opp; right = esc(w.last.result || ''); }
+    const opp = e => esc(e.opp);
+    const wtime = e => e.time ? tm(wrestDate(e)) : '';
+    const lastLine = w.last?.result ? `Last: ${esc(w.last.result)} ${opp(w.last)}` : '';
+    let kind, big, x, sub = '', hot = false;
+    if (w.next && (wd(w.next) === today || previewTime(wrestDate(w.next)))){
+      hot = wd(w.next) === today; kind = chip(hot ? 'GAME DAY' : 'PREVIEW', 'gd'); big = dayShort(wrestDate(w.next));
+      x = [opp(w.next), wtime(w.next), esc(w.next.tv || '')].filter(Boolean).join(' · '); sub = lastLine;
+    } else if (w.last?.result && [today, yest].includes(wd(w.last))){
+      kind = chip('RESULT'); big = esc(w.last.result); x = `${opp(w.last)} · ${wd(w.last) === today ? 'Today' : 'Yesterday'}`;
+      sub = w.next ? `Next: ${opp(w.next)} · ${dayShort(wrestDate(w.next))} ${wtime(w.next)}` : '';
+    } else if (w.next){
+      kind = chip('NEXT'); big = dayShort(wrestDate(w.next)); x = [opp(w.next), wtime(w.next), esc(w.next.tv || '')].filter(Boolean).join(' · '); sub = lastLine;
+    } else { kind = chip('LAST'); big = esc(w.last.result || ''); x = opp(w.last); }
+    big = big.replace(/^([WL])\b/, (m, r) => `<span class="${r === 'W' ? 'win' : 'loss'}">${r}</span>`);
     const rk = wrestRank();
-    rows.push({ live: false, html: `<div class="wli ${kind === 'GAME DAY' ? 'glow' : ''}"${kind === 'GAME DAY' ? ` style="--gl:${lighten('#7a0019')}"` : ''} data-tab="wr"><span class="wk">${chip(kind)}</span><span class="wt">${logoImg(wLogo)}<small>WRES</small></span><span class="wm"><b>${esc(opp)}</b>${rk ? `<small>#${rk}</small>` : ''}</span><span class="wr">${right}${sub ? `<small>${sub}</small>` : ''}</span><i>›</i></div>` });
+    rows.push({ live: false, html: line({ cls: hot ? 'glow' : '', sty: hot ? ` style="--gl:${lighten('#ffcc33')}"` : '', attrs: 'data-tab="wr"',
+      logo: GOPHER_LOGO, lg: 'WRES', name: 'Gophers Wrestling', rec: rk ? '#' + rk : '', kind, big, x, sub }) });
   }
   const list = [...rows.filter(r => r.live), ...rows.filter(r => !r.live)].map(r => r.html).join('');
   const strip = off.length ? `<div class="offrow">${off.map(t => `<div class="offc" style="border-color:${t.color}">${logoImg(t.logo)}<b>${esc(t.label)}</b><span>Offseason</span></div>`).join('')}</div>` : '';
@@ -1543,8 +1598,18 @@ async function pickerList(){
   el.innerHTML = rows.length ? rows.map(t => `<div class="pkr ${sel.has(t.id) ? 'on' : ''}" data-pkt="${code}:${t.id}"><img loading="lazy" src="${esc(t.logo)}" alt=""><span>${esc(t.name)}</span><i>${sel.has(t.id) ? '✓' : '+'}</i></div>`).join('')
     : `<div class="dim" style="padding:1rem">No teams match "${esc(pkQuery)}"</div>`;
 }
-function pickerRefresh(){ const m = document.getElementById('pkmine'); if (m) m.innerHTML = pickerMine(); pickerList(); }
-function savePicks(v){ try { localStorage.setItem('ysTeams', typeof v === 'string' ? v : JSON.stringify(v)); } catch(e){} location.replace(location.pathname); }
+function pickerRefresh(){ persistSel(); const m = document.getElementById('pkmine'); if (m) m.innerHTML = pickerMine(); pickerList(); }
+function savePicks(v){ try { localStorage.setItem('ysTeams', typeof v === 'string' ? v : JSON.stringify(v)); } catch(e){} location.replace(location.pathname + picksQuery(v)); }
+/* iPhone home-screen apps get their own storage, separate from Safari. Keeping the picks in the
+   page address means "Add to Home Screen" carries them into the app. */
+function picksQuery(v){
+  if (!IS_IOS || installed()) return '';
+  const t = v === 'mn' ? 'mn' : Array.isArray(v) && v.length ? v.map(p => p.c + ':' + p.id).join(',') : '';
+  return t ? `?teams=${t}${WRES ? '&wres=1' : ''}` : '';
+}
+function syncUrl(v){ const q = picksQuery(v); if (q && location.search !== q) history.replaceState(null, '', location.pathname + q); }
+let pkDirty = false;
+function persistSel(){ pkDirty = true; if (SELW.length){ try { localStorage.setItem('ysTeams', JSON.stringify(SELW)); } catch(e){} syncUrl(SELW); } }
 async function sharePicks(btn){
   const url = `${location.origin}${location.pathname}?teams=${SELW.map(p => p.c + ':' + p.id).join(',')}`;
   try {
@@ -1560,7 +1625,9 @@ document.addEventListener('input', ev => { if (ev.target.id === 'pkq'){ pkQuery 
    Hidden once installed; if dismissed it comes back once, a day or more later. */
 let installEvt = null;
 const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const installed = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+let appOnPhone = false;   // the app is already installed, even though this is a browser tab
+const installed = () => appOnPhone || window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+if (navigator.getInstalledRelatedApps) navigator.getInstalledRelatedApps().then(a => { if (a && a.length){ appOnPhone = true; if (PHONE && mTab === 'mn' && !mDetail && !mPick) mobileRender(true); } }).catch(() => {});
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (PHONE && !mDetail && !mPick && mTab === 'mn') mobileRender(true); });
 window.addEventListener('appinstalled', () => { try { localStorage.setItem('ysInstall', JSON.stringify({ done: 1 })); } catch(e){} if (PHONE) mobileRender(true); });
 function installState(){ try { return JSON.parse(localStorage.getItem('ysInstall') || '{}'); } catch(e){ return {}; } }
@@ -1572,7 +1639,7 @@ function installCard(){
   let body;
   if (installEvt) body = `<p>One tap and it opens like an app, full screen.</p><button class="revbtn" data-install>Add to home screen</button>`;
   else if (IS_IOS) body = `<ol><li>Tap the <b>Share</b> button ${share} <span class="dim">(bottom of Safari, top right in Chrome)</span></li><li>Scroll down and tap <b>Add to Home Screen</b></li><li>Tap <b>Add</b></li></ol>`;
-  else body = `<ol><li>Tap the <b>⋮</b> menu at the top right of Chrome</li><li>Tap <b>Add to Home screen</b> or <b>Install app</b></li><li>Tap <b>Install</b> (or <b>Add</b>)</li></ol>`;
+  else body = `<ol><li>Tap the <b>⋮</b> menu at the top right of Chrome</li><li>Tap <b>Add to Home screen</b> or <b>Install app</b></li><li>Tap <b>Install</b> (or <b>Add</b>)</li></ol><p style="margin-top:.4rem">If the menu shows <b>Open app</b> instead, it's already installed. Look for YourScores on your home screen.</p>`;
   return `<div class="inst"><button class="instx" data-installx aria-label="Dismiss">×</button><b>Put YourScores on your home screen</b>${body}</div>`;
 }
 async function doInstall(){
@@ -1604,9 +1671,9 @@ function mobileContent(){
 function mobileRender(keepScroll){
   const y = window.scrollY;
   const anyLive = CFG.mnTeams.some((t,i) => t.events && teamState(t,i).live);
-  const nflLive = (D.nfl || []).some(e => e.state === 'in'), nbaLive = (D.nba || []).some(e => e.state === 'in');
-  const liveDot = { mn: anyLive, nfl: nflLive, nba: nbaLive };
-  LEAGUES.forEach(L => { if (D['lg_' + L.code]?.some(e => e.state === 'in' && (!L.sport || e.teams.some(x => x.rank)))) liveDot[L.code] = true; });
+  // red dot = one of your teams is live right now (on My Teams and on that team's league tab)
+  const liveDot = { mn: anyLive };
+  CFG.mnTeams.forEach((t,i) => { if (t.events && teamState(t,i).live){ const L = lgOf(t.path); if (L) liveDot[L.code] = true; } });
   const tl = tabsList();
   if (!tl.some(([k]) => k === mTab)) mTab = 'mn';
   $('#tabs').innerHTML = tl.map(([k,l]) => `<button data-tab="${k}" class="${k === mTab && !mDetail ? 'on' : ''}">${l}${liveDot[k] ? '<i class="ld8"></i>' : ''}</button>`).join('');
@@ -1644,6 +1711,7 @@ document.addEventListener('click', ev => {
   if (t.hasAttribute('data-pkmn')){ savePicks('mn'); return; }
   if (t.dataset.shield){ const k = t.dataset.shield; SH.on[k] = !SH.on[k]; if (!SH.on[k]) delete SH.on[k]; saveSH(); mobileRender(true); return; }
   if (t.dataset.reveal){ SH.rev[t.dataset.reveal] = Date.now(); saveSH(); mobileRender(true); return; }
+  if (t.dataset.tab && mPick && pkDirty && SELW.length){ mTab = t.dataset.tab; try { localStorage.setItem('gsTab', mTab); } catch(e){} savePicks(SELW); return; }
   if (t.dataset.tab){ mTab = t.dataset.tab; mDetail = null; mPick = false; try { localStorage.setItem('gsTab', mTab); } catch(e){} mobileRender(); window.scrollTo(0,0); return; }
   if (t.hasAttribute('data-back')){ history.back(); return; }
   if (t.dataset.gid){ openGame(t.dataset.gid, t.dataset.path); return; }
@@ -1666,6 +1734,7 @@ function tick(){ $('#clock').textContent = fmt(new Date(), { hour:'numeric', min
 async function boot(){
   readPicks(); applyPicks();
   if (!IS_DEFAULT) await ensureMeta();
+  if (PHONE) syncUrl(PICKS);
   if (PHONE && !IS_DEFAULT && !CFG.mnTeams.length){ mPick = true; SELW = []; }
   tick(); setInterval(tick, 10e3);
   loadWeather(); setInterval(loadWeather, 30*60e3);
